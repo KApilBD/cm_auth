@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Form } from "react-final-form";
 import { Context as AuthContext } from "../../../context/authContext";
 import { Link, useHistory } from "react-router-dom";
@@ -8,13 +8,24 @@ import validateSignupForm from "./signupValidator";
 import { InputField } from "../../atom";
 const Signup = () => {
   const { state, signup } = useContext(AuthContext);
-  const history = useHistory();
+  const [errorMessage, setErrorMessage] = useState();
 
+  const history = useHistory();
+  
   useEffect(() => {
     if (state.email) {
       history.replace("/login");
     }
+    if (state.errorMessage) {
+      setErrorMessage(state.errorMessage);
+      console.log("ERRPRR", state.errorMessage);
+    }
   }, [state]);
+
+  useEffect(() => {
+    setErrorMessage("");
+  }, []);
+
   function onSignup(data) {
     if (data.password === data.confirmPassword) {
       signup({ email: data.email, password: data.password });
@@ -30,7 +41,7 @@ const Signup = () => {
             onSubmit={onSignup}
             validate={validateSignupForm}
             render={({ handleSubmit, submitting }) => (
-              <form className="form-style" onSubmit={handleSubmit}>
+              <form className="card-style" onSubmit={handleSubmit}>
                 <div>
                   <label className="search-label">
                     Email:
@@ -74,6 +85,9 @@ const Signup = () => {
                   >
                     Signup
                   </button>
+                  {errorMessage && (
+                    <p className="text-red-500">{errorMessage}</p>
+                  )}
                 </div>
               </form>
             )}

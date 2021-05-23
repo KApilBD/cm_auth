@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Form } from "react-final-form";
 import { Link } from "react-router-dom";
 import { Context as AuthContext } from "../../../context/authContext";
@@ -8,10 +8,20 @@ import { InputField } from "../../atom";
 
 const ForgotPassword = () => {
   const { state, forgotPassword } = useContext(AuthContext);
-  console.log("State: ", state);
+  const [errorMessage, setErrorMessage] = useState();
+
+  useEffect(() => {
+    if (state.errorMessage) {
+      setErrorMessage(state.errorMessage);
+      console.log("ERRPRR", state.errorMessage);
+    }
+  }, [state]);
+
+  useEffect(() => {
+    setErrorMessage("");
+  }, []);
 
   function onLogin(data) {
-    console.log(data);
     forgotPassword({
       email: data.email,
     });
@@ -27,7 +37,7 @@ const ForgotPassword = () => {
             onSubmit={onLogin}
             validate={validateLoginForm}
             render={({ handleSubmit, submitting }) => (
-              <form className="form-style" onSubmit={handleSubmit}>
+              <form className="card-style" onSubmit={handleSubmit}>
                 <div>
                   <label className="search-label">
                     Email:
@@ -47,6 +57,9 @@ const ForgotPassword = () => {
                   >
                     Submit
                   </button>
+                  {errorMessage && (
+                    <p className="text-red-500">{errorMessage}</p>
+                  )}
                 </div>
               </form>
             )}

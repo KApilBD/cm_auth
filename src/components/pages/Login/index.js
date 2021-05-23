@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Form } from "react-final-form";
 import { Link, useHistory } from "react-router-dom";
 import { Context as AuthContext } from "../../../context/authContext";
@@ -8,18 +8,25 @@ import { InputField, CheckboxField } from "../../atom";
 
 const Login = () => {
   const { state, login } = useContext(AuthContext);
+  const [errorMessage, setErrorMessage] = useState();
   const history = useHistory();
 
   useEffect(() => {
     if (state.isloggedIn) {
-      history.replace("/");
+      history.push("/");
+    }
+    if (state.errorMessage) {
+      setErrorMessage(state.errorMessage);
     }
   }, [state]);
+
+  useEffect(() => {
+    setErrorMessage("");
+  }, []);
 
   function onLogin(data) {
     login({ email: data.email, password: data.password, isAdmin: data.admin });
   }
-  function validate() {}
 
   return (
     <>
@@ -30,7 +37,7 @@ const Login = () => {
             onSubmit={onLogin}
             validate={validateLoginForm}
             render={({ handleSubmit, submitting }) => (
-              <form className="form-style" onSubmit={handleSubmit}>
+              <form className="card-style" onSubmit={handleSubmit}>
                 <div>
                   <label className="search-label">
                     Email:
@@ -72,6 +79,9 @@ const Login = () => {
                   >
                     Login
                   </button>
+                  {errorMessage && (
+                    <p className="text-red-500">{errorMessage}</p>
+                  )}
                 </div>
               </form>
             )}
